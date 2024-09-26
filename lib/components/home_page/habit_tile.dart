@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:habit_tracker/util/constants.dart';
 
 import '../../domain/models/habit.dart';
 
@@ -52,7 +53,7 @@ class HabitTile extends StatelessWidget {
                 ),
                 SlidableAction(
                   onPressed: onDelete,
-                  backgroundColor: Theme.of(context).colorScheme.error,
+                  backgroundColor: errorColor,
                   icon: CupertinoIcons.clear_circled,
                   borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(10),

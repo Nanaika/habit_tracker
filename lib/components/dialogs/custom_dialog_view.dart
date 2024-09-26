@@ -20,7 +20,6 @@ class CustomDialogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('controller text --3------------  ${controller.text} ----  ${controller.toString()}');
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,8 +57,8 @@ class CustomDeleteDialogView extends StatelessWidget {
         Row(
           children: [
             Lottie.asset('assets/error_red.json', width: 50, height: 50),
-            SizedBox(width: 10,),
-            Text('DELETE HABIT?'),
+            const SizedBox(width: 10,),
+            const Text('DELETE HABIT?'),
           ],
         ),
         Padding(

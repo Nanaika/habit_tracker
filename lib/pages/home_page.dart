@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
       drawer: const CustomDrawer(),
       floatingActionButton: CustomFAB(
         onPressed: () {
+          controller.clear();
           showCustomDialog(
             title: 'NEW HABIT',
             context: context,
@@ -74,7 +75,16 @@ class _HomePageState extends State<HomePage> {
                   },
                   onDelete: (ctx) {
                     showCustomDeleteDialog(
-                        context: context, onAccept: () {}, onCancel: () {});
+                        context: context,
+                        onAccept: () {
+                          deleteHabit(habit.id, context);
+                          controller.clear();
+                          Navigator.of(context).pop();
+                        },
+                        onCancel: () {
+                          Navigator.of(context).pop();
+                          controller.clear();
+                        });
                   },
                   habit: habit,
                   isCompleted: isCompletedToday,

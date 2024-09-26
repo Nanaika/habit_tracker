@@ -10,6 +10,7 @@ final lightTheme = ThemeData(
     tertiary: Colors.white,
     inversePrimary: Colors.grey.shade900,
     surfaceContainerHigh: const Color.fromARGB(255, 210, 210, 210),
+    onSurfaceVariant: Colors.white,
   ),
 );
 
@@ -24,5 +25,6 @@ final darkTheme = ThemeData(
     tertiary: Colors.grey.shade800,
     inversePrimary: Colors.grey.shade300,
     surfaceContainerHigh: const Color.fromARGB(255, 38, 38, 38),
+      onSurfaceVariant: Colors.white,
   ),
 );

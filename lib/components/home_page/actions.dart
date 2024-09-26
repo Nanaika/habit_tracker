@@ -96,7 +96,7 @@ class DeleteActions extends StatelessWidget {
             ),
             child: Text(
               'DELETE',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ),

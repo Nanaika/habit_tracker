@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:habit_tracker/theme/theme/theme_bloc.dart';
 import 'package:habit_tracker/util/constants.dart';
 
 import '../../domain/models/habit.dart';
@@ -65,18 +67,36 @@ class HabitTile extends StatelessWidget {
                     : Theme.of(context).colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: ListTile(
-                leading: Checkbox(
-                  value: isCompleted,
-                  onChanged: onChanged,
-                  activeColor: Colors.green,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ListTile(
+                  leading: Checkbox(
+                    value: isCompleted,
+                    onChanged: onChanged,
+                    activeColor: Colors.green,
+                  ),
+                  title: Text(
+                    habit.name,
+                    style: TextStyle(
+                      color: setColor(context, isCompleted),
+                    ),
+                  ),
                 ),
-                title: Text(habit.name),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+Color setColor(BuildContext context, bool isCompleted) {
+  if (context.read<ThemeBloc>().isDark && isCompleted) {
+    return Colors.black;
+  } else if (!context.read<ThemeBloc>().isDark && isCompleted) {
+    return Colors.white;
+  } else {
+    return Theme.of(context).colorScheme.inversePrimary;
   }
 }

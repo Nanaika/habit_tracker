@@ -68,6 +68,10 @@ class _HomePageState extends State<HomePage> {
                           controller.clear();
                         },
                         onAccept: () {
+                          if (controller.text.isEmpty) {
+                            context.read<EmptyFieldBloc>().toggle(true);
+                            return;
+                          }
                           editHabitName(controller.text, habit.id, context);
                           controller.clear();
                           Navigator.of(context).pop();

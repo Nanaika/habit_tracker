@@ -29,46 +29,50 @@ class HabitTile extends StatelessWidget {
           onChanged!(!isCompleted);
         }
       },
-      child: Container(
-        margin: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 12.0),
-        decoration: BoxDecoration(
-          color: isCompleted
-              ? Colors.green
-              : Theme.of(context).colorScheme.surfaceContainerHigh,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(10),
-            bottomRight: Radius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isCompleted
+                ? Colors.green
+                : Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(10),
           ),
-        ),
-        child: Slidable(
-          endActionPane: ActionPane(
-              extentRatio: 0.45,
-              motion: const BehindMotion(),
-              children: [
-                SlidableAction(
-                  onPressed: onEdit,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  icon: CupertinoIcons.square_pencil,
-                  // borderRadius: BorderRadius.circular(10),
-                ),
-                SlidableAction(
-                  onPressed: onDelete,
-                  backgroundColor: errorColor,
-                  icon: CupertinoIcons.clear_circled,
-                  borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                ),
-              ]),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListTile(
-              leading: Checkbox(
-                value: isCompleted,
-                onChanged: onChanged,
-                activeColor: Colors.green,
+          child: Slidable(
+            endActionPane: ActionPane(
+                extentRatio: 0.45,
+                motion: const BehindMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: onEdit,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    icon: CupertinoIcons.square_pencil,
+                    // borderRadius: BorderRadius.circular(10),
+                  ),
+                  SlidableAction(
+                    onPressed: onDelete,
+                    backgroundColor: errorColor,
+                    icon: CupertinoIcons.clear_circled,
+                    borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10)),
+                  ),
+                ]),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isCompleted
+                    ? Colors.green
+                    : Theme.of(context).colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(10),
               ),
-              title: Text(habit.name),
+              child: ListTile(
+                leading: Checkbox(
+                  value: isCompleted,
+                  onChanged: onChanged,
+                  activeColor: Colors.green,
+                ),
+                title: Text(habit.name),
+              ),
             ),
           ),
         ),

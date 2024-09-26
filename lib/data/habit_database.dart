@@ -28,18 +28,17 @@ class HabitDatabase {
     await isar.writeTxn(() => isar.habits.put(habit));
   }
 
-  Future<List<Habit>> fetchAll() async {
+  Future<List<Habit>> fetchAllData() async {
     return await isar.habits.where().findAll();
   }
 
   Future<void> updateHabitCompletion(int id, bool isComplete) async {
     final habit = await isar.habits.get(id);
     if (habit != null) {
-      isar.writeTxn(() async {
+      await isar.writeTxn(() async {
         if (isComplete &&
-            !habit.completedDays.contains(
-              DateTime.now(),
-            )) {
+            !habit.completedDays.contains(DateTime(DateTime.now().year,
+                DateTime.now().month, DateTime.now().day))) {
           final today = DateTime.now();
           final dateTime = DateTime(today.year, today.month, today.day);
           habit.completedDays.add(dateTime);
@@ -68,4 +67,15 @@ class HabitDatabase {
       await isar.writeTxn(() => isar.habits.delete(id));
     }
   }
+}
+
+bool _checkDateTime(List<DateTime> dates, DateTime date) {
+  for (var elem in dates) {
+    if (elem.year == date.year &&
+        elem.month == date.month &&
+        elem.day == date.day) {
+      return true;
+    }
+  }
+  return false;
 }

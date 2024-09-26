@@ -5,17 +5,14 @@ import '../domain/models/habit.dart';
 
 class MainBloc extends Cubit<List<Habit>> {
   MainBloc(this.db) : super([]) {
-    print('---------entered constructor');
     fetchAll();
   }
 
   final HabitDatabase db;
 
   void fetchAll() async {
-    final habits = await db.fetchAll();
-    for (var elem in habits) {
-      print('----------- ${elem.toString()}');
-    }
+    final habits = await db.fetchAllData();
+    for (var ele in habits) {}
     emit(habits);
   }
 
@@ -38,5 +35,4 @@ class MainBloc extends Cubit<List<Habit>> {
     await db.delete(id);
     fetchAll();
   }
-
 }

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/bloc/empty_field_bloc.dart';
 import 'package:habit_tracker/bloc/main_bloc.dart';
+import 'package:habit_tracker/util/is_habit_conplete_today.dart';
 
 import '../components/custom_drawer.dart';
 import '../components/dialogs/show_custom_dialog.dart';
 import '../components/home_page/custom_fab.dart';
+import '../components/home_page/habit_tile.dart';
 import '../domain/models/habit.dart';
 
 class HomePage extends StatefulWidget {
@@ -51,13 +53,22 @@ class _HomePageState extends State<HomePage> {
               itemCount: habits.length,
               itemBuilder: (ctx, index) {
                 final habit = habits[index];
-                return ListTile(
-                  title: Text(habit.name),
-                  subtitle: Text(habit.id.toString()),
+                final isCompletedToday =
+                    isHabitCompletedToday(habit.completedDays);
+                return HabitTile(
+                  habit: habit,
+                  isCompleted: isCompletedToday,
+                  onChanged: (value) => checkHabitOnOff(value, habit, context),
                 );
               });
         },
       ),
     );
+  }
+}
+
+checkHabitOnOff(bool? value, Habit habit, BuildContext context) {
+  if (value != null) {
+    context.read<MainBloc>().updateHabitCompletion(habit.id, value);
   }
 }

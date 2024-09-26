@@ -16,6 +16,9 @@ import 'domain/models/habit.dart';
 const isDarkKey = 'isDark';
 
 void main() async {
+
+
+
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -42,7 +45,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print('-----------------------------------!!!!!!!!!!!!!!!!!!!!!!');
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (ctx) => ThemeBloc(isDark)),

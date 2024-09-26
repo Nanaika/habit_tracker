@@ -26,9 +26,9 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(),
       drawer: const CustomDrawer(),
       floatingActionButton: CustomFAB(
-        controller: controller,
         onPressed: () {
           showCustomDialog(
+            title: 'NEW HABIT',
             context: context,
             controller: controller,
             onAccept: () {
@@ -56,6 +56,26 @@ class _HomePageState extends State<HomePage> {
                 final isCompletedToday =
                     isHabitCompletedToday(habit.completedDays);
                 return HabitTile(
+                  onEdit: (ctx) {
+                    controller.text = habit.name;
+                    showCustomDialog(
+                        context: context,
+                        controller: controller,
+                        title: 'EDIT HABIT',
+                        onCancel: () {
+                          Navigator.of(context).pop();
+                          controller.clear();
+                        },
+                        onAccept: () {
+                          editHabitName(controller.text, habit.id, context);
+                          controller.clear();
+                          Navigator.of(context).pop();
+                        });
+                  },
+                  onDelete: (ctx) {
+                    showCustomDeleteDialog(
+                        context: context, onAccept: () {}, onCancel: () {});
+                  },
                   habit: habit,
                   isCompleted: isCompletedToday,
                   onChanged: (value) => checkHabitOnOff(value, habit, context),
@@ -67,7 +87,15 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-checkHabitOnOff(bool? value, Habit habit, BuildContext context) {
+void deleteHabit(int id, BuildContext context) {
+  context.read<MainBloc>().delete(id);
+}
+
+void editHabitName(String newName, int id, BuildContext context) {
+  context.read<MainBloc>().updateName(id, newName);
+}
+
+void checkHabitOnOff(bool? value, Habit habit, BuildContext context) {
   if (value != null) {
     context.read<MainBloc>().updateHabitCompletion(habit.id, value);
   }

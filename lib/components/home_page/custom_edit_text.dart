@@ -5,10 +5,12 @@ import 'package:habit_tracker/bloc/empty_field_bloc.dart';
 class CustomEditText extends StatelessWidget {
   const CustomEditText({
     super.key,
-    required this.controller,
+    required this.controller, this.title = '',
+
   });
 
   final TextEditingController controller;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +18,11 @@ class CustomEditText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 8.0, bottom: 4.0),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
           child: Text(
-            'NEW HABIT',
-            style: TextStyle(fontSize: 12),
+            title,
+            style: const TextStyle(fontSize: 12),
           ),
         ),
         Container(
@@ -43,7 +45,7 @@ class CustomEditText extends StatelessWidget {
                 border: InputBorder.none,
                 hintText: 'enter here ...',
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.75),
                 ),
               ),
             ),

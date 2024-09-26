@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 class CustomFAB extends StatelessWidget {
   const CustomFAB({
     super.key,
-    required this.controller, required this.onPressed,
+    required this.onPressed,
   });
 
-  final TextEditingController controller;
   final Function() onPressed;
+
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(

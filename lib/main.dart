@@ -17,8 +17,6 @@ const isDarkKey = 'isDark';
 
 void main() async {
 
-
-
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

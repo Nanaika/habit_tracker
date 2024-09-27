@@ -69,13 +69,13 @@ class HabitDatabase {
   }
 }
 
-bool _checkDateTime(List<DateTime> dates, DateTime date) {
-  for (var elem in dates) {
-    if (elem.year == date.year &&
-        elem.month == date.month &&
-        elem.day == date.day) {
-      return true;
-    }
-  }
-  return false;
-}
+// bool _checkDateTime(List<DateTime> dates, DateTime date) {
+//   for (var elem in dates) {
+//     if (elem.year == date.year &&
+//         elem.month == date.month &&
+//         elem.day == date.day) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }

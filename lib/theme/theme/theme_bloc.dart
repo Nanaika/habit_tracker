@@ -6,11 +6,11 @@ import 'package:habit_tracker/theme/theme/theme.dart';
 class ThemeBloc extends Cubit<ThemeData> {
   ThemeBloc(this.isDark) : super(lightTheme) {
     if (isDark) {
-      emit(darkTheme);
       darkSystemUi();
+      emit(darkTheme);
     } else {
-      emit(lightTheme);
       lightSystemUi();
+      emit(lightTheme);
     }
   }
 
@@ -19,30 +19,33 @@ class ThemeBloc extends Cubit<ThemeData> {
   void toggleDarkMode() {
     isDark = !isDark;
     if (isDark) {
-      emit(darkTheme);
       darkSystemUi();
+      emit(darkTheme);
     } else {
-      emit(lightTheme);
       lightSystemUi();
+      emit(lightTheme);
     }
 
   }
 }
 
 void lightSystemUi() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.dark,
+        // statusBarIconBrightness: Brightness.dark,
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Color.fromARGB(1, 1, 1, 1),
         systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark),
   );
+
 }
 void darkSystemUi() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.light,
+        // statusBarIconBrightness: Brightness.light,
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Color.fromARGB(1, 1, 1, 1),
         systemNavigationBarDividerColor: Colors.transparent,

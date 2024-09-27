@@ -16,18 +16,16 @@ import 'domain/models/habit.dart';
 const isDarkKey = 'isDark';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   final sp = await SharedPreferences.getInstance();
 
   final isDark = sp.getBool(isDarkKey) ?? false;
 
-
   final dir = await getApplicationDocumentsDirectory();
-  final isar = Isar.openSync([HabitSchema, AppSettingsSchema], directory: dir.path);
+  final isar =
+      Isar.openSync([HabitSchema, AppSettingsSchema], directory: dir.path);
 
   runApp(MyApp(
     isDark: isDark,
@@ -40,6 +38,7 @@ class MyApp extends StatelessWidget {
 
   final bool isDark;
   final Isar isar;
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

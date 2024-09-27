@@ -12,7 +12,6 @@ class MainBloc extends Cubit<List<Habit>> {
 
   void fetchAll() async {
     final habits = await db.fetchAllData();
-    for (var ele in habits) {}
     emit(habits);
   }
 
@@ -34,5 +33,9 @@ class MainBloc extends Cubit<List<Habit>> {
   void delete(int id) async {
     await db.delete(id);
     fetchAll();
+  }
+
+  Future<DateTime?> getFirstLaunchDate() async {
+    return await db.getFirstLaunchDate();
   }
 }

@@ -32,7 +32,7 @@ class ThemeBloc extends Cubit<ThemeData> {
 void lightSystemUi() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-        // statusBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark,
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Color.fromARGB(1, 1, 1, 1),
         systemNavigationBarDividerColor: Colors.transparent,
@@ -43,7 +43,7 @@ void lightSystemUi() {
 void darkSystemUi() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-        // statusBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Color.fromARGB(1, 1, 1, 1),
         systemNavigationBarDividerColor: Colors.transparent,

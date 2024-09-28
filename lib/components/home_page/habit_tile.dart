@@ -41,7 +41,7 @@ class HabitTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Slidable(
-            endActionPane: ActionPane(
+            startActionPane: ActionPane(
                 extentRatio: 0.45,
                 motion: const BehindMotion(),
                 children: [

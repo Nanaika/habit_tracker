@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/bloc/empty_field_bloc.dart';
-import 'package:habit_tracker/bloc/habit_list_state_bloc.dart';
 import 'package:habit_tracker/bloc/main_bloc.dart';
 import 'package:habit_tracker/components/heat_map.dart';
 import 'package:habit_tracker/components/home_page/empty_habits_view.dart';
@@ -53,30 +52,19 @@ class _HomePageState extends State<HomePage>
     animController.dispose();
     super.dispose();
   }
-
-  @override
-  Widget build(BuildContext context) {
-    scrollController.addListener(() {
-      if (scrollController.position.atEdge &&
-          context.read<FabVisibilityBloc>().state &&
-          scrollController.offset ==
-              scrollController.position.maxScrollExtent) {
-        context.read<FabVisibilityBloc>().toggle(false);
-        animController.forward();
-      } else if (!scrollController.position.atEdge &&
-          !context.read<FabVisibilityBloc>().state) {
-        context.read<FabVisibilityBloc>().toggle(true);
-        animController.reverse();
-      }
-    });
-
+//start landscape
+  Widget buildLandscape() {
     return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor:
-            Theme.of(context).colorScheme.surface.withOpacity(0.02),
-      ),
+      // appBar: AppBar(
+      //   elevation: 0,
+      //   toolbarHeight: 0.0,
+      //   backgroundColor:
+      //       Colors.transparent,
+      //       // Theme.of(context).colorScheme.surface.withOpacity(0.02),
+      // ),
       drawer: const CustomDrawer(),
       floatingActionButton: SlideTransition(
         position: slideTransition,
@@ -104,26 +92,29 @@ class _HomePageState extends State<HomePage>
           },
         ),
       ),
-      body: SafeArea(
-        child: BlocBuilder<MainBloc, List<Habit>>(
-          builder: (BuildContext context, habits) {
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                    height: MediaQuery.of(context).size.height / 3,
-                    child: setHeatMap(context, habits)),
-                Expanded(
-                  child: habits.isNotEmpty ? ListView.builder(
+      body: BlocBuilder<MainBloc, List<Habit>>(
+        builder: (BuildContext context, habits) {
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+
+              SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: setHeatMap(context, habits)),
+              Expanded(
+                child: habits.isNotEmpty
+                    ? SafeArea(
+                  top: false,
+                      child: ListView.builder(
                       controller: scrollController,
-                      // physics: const AlwaysScrollableScrollPhysics(
-                      //   parent: BouncingScrollPhysics(),
-                      // ),
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
                       itemCount: habits.length,
                       itemBuilder: (ctx, index) {
                         final habit = habits[index];
                         final isCompletedToday =
-                            isHabitCompletedToday(habit.completedDays);
+                        isHabitCompletedToday(habit.completedDays);
                         return HabitTile(
                           onEdit: (ctx) {
                             controller.text = habit.name;
@@ -137,7 +128,9 @@ class _HomePageState extends State<HomePage>
                                 },
                                 onAccept: () {
                                   if (controller.text.isEmpty) {
-                                    context.read<EmptyFieldBloc>().toggle(true);
+                                    context
+                                        .read<EmptyFieldBloc>()
+                                        .toggle(true);
                                     return;
                                   }
                                   editHabitName(
@@ -164,14 +157,148 @@ class _HomePageState extends State<HomePage>
                           onChanged: (value) =>
                               checkHabitOnOff(value, habit, context),
                         );
-                      }) : EmptyHabitsView(),
-                ),
-              ],
-            );
-          },
-        ),
+                      }),
+                    )
+                    : EmptyHabitsView(),
+              ),
+            ],
+          );
+        },
       ),
     );
+  }
+//end landscape
+  @override
+  Widget build(BuildContext context) {
+    scrollController.addListener(() {
+
+      //TODO reverse button not working
+      //TODO status bar not transparent
+
+      print('----TEST offset----------  ${scrollController.offset}');
+      print('----TEST max----------  ${scrollController.position.maxScrollExtent}');
+      if (scrollController.position.atEdge &&
+          context.read<FabVisibilityBloc>().state &&
+          scrollController.offset ==
+              scrollController.position.maxScrollExtent) {
+        context.read<FabVisibilityBloc>().toggle(false);
+        animController.forward();
+      } else if (!scrollController.position.atEdge &&
+          !context.read<FabVisibilityBloc>().state) {
+        context.read<FabVisibilityBloc>().toggle(true);
+        animController.reverse();
+      }
+    });
+
+    return OrientationBuilder(
+      builder: (BuildContext context, Orientation orientation) {
+        return orientation == Orientation.landscape
+            ? buildLandscape()
+            : SizedBox();
+      },
+    );
+    // return Scaffold(
+    //   backgroundColor: Theme.of(context).colorScheme.surface,
+    //   appBar: AppBar(
+    //     elevation: 0,
+    //     backgroundColor:
+    //         Theme.of(context).colorScheme.surface.withOpacity(0.02),
+    //   ),
+    //   drawer: const CustomDrawer(),
+    //   floatingActionButton: SlideTransition(
+    //     position: slideTransition,
+    //     child: CustomFAB(
+    //       onPressed: () {
+    //         controller.clear();
+    //         showCustomDialog(
+    //           title: 'NEW HABIT',
+    //           context: context,
+    //           controller: controller,
+    //           onAccept: () {
+    //             if (controller.text.isEmpty) {
+    //               context.read<EmptyFieldBloc>().toggle(true);
+    //               return;
+    //             }
+    //             context.read<MainBloc>().addHabit(controller.text);
+    //             Navigator.of(context).pop();
+    //             controller.clear();
+    //           },
+    //           onCancel: () {
+    //             Navigator.of(context).pop();
+    //             controller.clear();
+    //           },
+    //         );
+    //       },
+    //     ),
+    //   ),
+    //   body: SafeArea(
+    //     child: BlocBuilder<MainBloc, List<Habit>>(
+    //       builder: (BuildContext context, habits) {
+    //         return Column(
+    //           mainAxisSize: MainAxisSize.max,
+    //           children: [
+    //             SizedBox(
+    //                 height: MediaQuery.of(context).size.height / 3,
+    //                 child: setHeatMap(context, habits)),
+    //             Expanded(
+    //               child: habits.isNotEmpty ? ListView.builder(
+    //                   controller: scrollController,
+    //                   // physics: const AlwaysScrollableScrollPhysics(
+    //                   //   parent: BouncingScrollPhysics(),
+    //                   // ),
+    //                   itemCount: habits.length,
+    //                   itemBuilder: (ctx, index) {
+    //                     final habit = habits[index];
+    //                     final isCompletedToday =
+    //                         isHabitCompletedToday(habit.completedDays);
+    //                     return HabitTile(
+    //                       onEdit: (ctx) {
+    //                         controller.text = habit.name;
+    //                         showCustomDialog(
+    //                             context: context,
+    //                             controller: controller,
+    //                             title: 'EDIT HABIT',
+    //                             onCancel: () {
+    //                               Navigator.of(context).pop();
+    //                               controller.clear();
+    //                             },
+    //                             onAccept: () {
+    //                               if (controller.text.isEmpty) {
+    //                                 context.read<EmptyFieldBloc>().toggle(true);
+    //                                 return;
+    //                               }
+    //                               editHabitName(
+    //                                   controller.text, habit.id, context);
+    //                               controller.clear();
+    //                               Navigator.of(context).pop();
+    //                             });
+    //                       },
+    //                       onDelete: (ctx) {
+    //                         showCustomDeleteDialog(
+    //                             context: context,
+    //                             onAccept: () {
+    //                               deleteHabit(habit.id, context);
+    //                               controller.clear();
+    //                               Navigator.of(context).pop();
+    //                             },
+    //                             onCancel: () {
+    //                               Navigator.of(context).pop();
+    //                               controller.clear();
+    //                             });
+    //                       },
+    //                       habit: habit,
+    //                       isCompleted: isCompletedToday,
+    //                       onChanged: (value) =>
+    //                           checkHabitOnOff(value, habit, context),
+    //                     );
+    //                   }) : EmptyHabitsView(),
+    //             ),
+    //           ],
+    //         );
+    //       },
+    //     ),
+    //   ),
+    // );
   }
 }
 
@@ -202,7 +329,6 @@ Widget setHeatMap(BuildContext context, List<Habit> habits) {
           height: MediaQuery.of(context).size.height / 3,
         );
       }
-
     },
     initialData: DateTime.timestamp(),
   );

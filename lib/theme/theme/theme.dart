@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 final lightTheme = ThemeData(
-  fontFamily: GoogleFonts.oswald().fontFamily,
+  fontFamily: 'oswald',
   colorScheme: ColorScheme.light(
     surface: Colors.grey.shade300,
     primary: Colors.grey.shade500,
@@ -12,11 +11,12 @@ final lightTheme = ThemeData(
     surfaceContainerHigh: const Color.fromARGB(255, 210, 210, 210),
     onSurfaceVariant: Colors.white,
   ),
+  dividerTheme: const DividerThemeData(color: Colors.transparent),
 );
 
 
 final darkTheme = ThemeData(
-  fontFamily: GoogleFonts.oswald().fontFamily,
+  fontFamily: 'oswald',
   colorScheme: ColorScheme.dark(
     surface: Colors.grey.shade900,
     primary: Colors.grey.shade600,
@@ -27,4 +27,5 @@ final darkTheme = ThemeData(
     surfaceContainerHigh: const Color.fromARGB(255, 38, 38, 38),
       onSurfaceVariant: Colors.white,
   ),
+  dividerTheme: const DividerThemeData(color: Colors.transparent),
 );

@@ -17,7 +17,7 @@ class CustomFAB extends StatelessWidget {
       onPressed: onPressed,
       child: Icon(
         CupertinoIcons.add,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.inversePrimary,
       ),
     );
   }

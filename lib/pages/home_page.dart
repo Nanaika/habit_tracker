@@ -1,19 +1,19 @@
-import 'package:faker_dart/faker_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_tracker/bloc/empty_field_bloc.dart';
+import 'package:habit_tracker/bloc/habit_list_state_bloc.dart';
 import 'package:habit_tracker/bloc/main_bloc.dart';
 import 'package:habit_tracker/components/heat_map.dart';
-import 'package:habit_tracker/util/is_habit_conplete_today.dart';
+import 'package:habit_tracker/components/home_page/empty_habits_view.dart';
+import 'package:habit_tracker/util/is_habit_complete_today.dart';
 
+import '../bloc/fab_visibility_bloc.dart';
 import '../components/custom_drawer.dart';
 import '../components/dialogs/show_custom_dialog.dart';
 import '../components/home_page/custom_fab.dart';
 import '../components/home_page/habit_tile.dart';
 import '../domain/models/habit.dart';
 import '../util/prepare_data_set.dart';
-
-final faker = Faker.instance;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,40 +22,87 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   final controller = TextEditingController();
+
+  var isFabVisible = true;
+
+  final scrollController = ScrollController();
+
+  late final AnimationController animController;
+  late final Animation<Offset> slideTransition;
+
+  @override
+  void initState() {
+    animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    slideTransition = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, 10),
+    ).animate(
+      CurvedAnimation(parent: animController, curve: Curves.easeInOut),
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    scrollController.addListener(() {
+      if (scrollController.position.atEdge &&
+          context.read<FabVisibilityBloc>().state &&
+          scrollController.offset ==
+              scrollController.position.maxScrollExtent) {
+        context.read<FabVisibilityBloc>().toggle(false);
+        animController.forward();
+      } else if (!scrollController.position.atEdge &&
+          !context.read<FabVisibilityBloc>().state) {
+        context.read<FabVisibilityBloc>().toggle(true);
+        animController.reverse();
+      }
+    });
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor:
+            Theme.of(context).colorScheme.surface.withOpacity(0.02),
       ),
       drawer: const CustomDrawer(),
-      floatingActionButton: CustomFAB(
-        onPressed: () {
-          controller.clear();
-          showCustomDialog(
-            title: 'NEW HABIT',
-            context: context,
-            controller: controller,
-            onAccept: () {
-              if (controller.text.isEmpty) {
-                context.read<EmptyFieldBloc>().toggle(true);
-                return;
-              }
-              context.read<MainBloc>().addHabit(controller.text);
-              Navigator.of(context).pop();
-              controller.clear();
-            },
-            onCancel: () {
-              Navigator.of(context).pop();
-              controller.clear();
-            },
-          );
-        },
+      floatingActionButton: SlideTransition(
+        position: slideTransition,
+        child: CustomFAB(
+          onPressed: () {
+            controller.clear();
+            showCustomDialog(
+              title: 'NEW HABIT',
+              context: context,
+              controller: controller,
+              onAccept: () {
+                if (controller.text.isEmpty) {
+                  context.read<EmptyFieldBloc>().toggle(true);
+                  return;
+                }
+                context.read<MainBloc>().addHabit(controller.text);
+                Navigator.of(context).pop();
+                controller.clear();
+              },
+              onCancel: () {
+                Navigator.of(context).pop();
+                controller.clear();
+              },
+            );
+          },
+        ),
       ),
       body: SafeArea(
         child: BlocBuilder<MainBloc, List<Habit>>(
@@ -67,7 +114,11 @@ class _HomePageState extends State<HomePage> {
                     height: MediaQuery.of(context).size.height / 3,
                     child: setHeatMap(context, habits)),
                 Expanded(
-                  child: ListView.builder(
+                  child: habits.isNotEmpty ? ListView.builder(
+                      controller: scrollController,
+                      // physics: const AlwaysScrollableScrollPhysics(
+                      //   parent: BouncingScrollPhysics(),
+                      // ),
                       itemCount: habits.length,
                       itemBuilder: (ctx, index) {
                         final habit = habits[index];
@@ -113,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                           onChanged: (value) =>
                               checkHabitOnOff(value, habit, context),
                         );
-                      }),
+                      }) : EmptyHabitsView(),
                 ),
               ],
             );
@@ -143,12 +194,14 @@ Widget setHeatMap(BuildContext context, List<Habit> habits) {
   return FutureBuilder(
     future: future,
     builder: (ctx, snap) {
-      if(snap.data != null) {
-        return CustomHeatMap(startDate: snap.data!, dataset: prepDataSet(habits));
+      if (snap.data != null) {
+        return CustomHeatMap(
+            startDate: snap.data!, dataset: prepDataSet(habits));
+      } else {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height / 3,
+        );
       }
-      else {
-        return SizedBox(height: MediaQuery.of(context).size.height / 3,);
-      };
 
     },
     initialData: DateTime.timestamp(),

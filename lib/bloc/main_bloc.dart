@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_tracker/bloc/habit_list_state_bloc.dart';
 import 'package:habit_tracker/data/habit_database.dart';
 
 import '../domain/models/habit.dart';
@@ -7,7 +8,7 @@ class MainBloc extends Cubit<List<Habit>> {
   MainBloc(this.db) : super([]) {
     fetchAll();
   }
-
+  HabitListState habitState = HabitsLoading();
   final HabitDatabase db;
 
   void fetchAll() async {

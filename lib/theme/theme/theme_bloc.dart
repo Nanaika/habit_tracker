@@ -30,7 +30,6 @@ class ThemeBloc extends Cubit<ThemeData> {
 }
 
 void lightSystemUi() {
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
         // statusBarIconBrightness: Brightness.dark,
@@ -42,7 +41,6 @@ void lightSystemUi() {
 
 }
 void darkSystemUi() {
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
         // statusBarIconBrightness: Brightness.light,

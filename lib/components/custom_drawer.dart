@@ -12,13 +12,53 @@ class CustomDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CupertinoSwitch(value: context.read<ThemeBloc>().isDark, onChanged: (test) {
-            context.read<ThemeBloc>().toggleDarkMode();
-          }),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 50,
+              ),
+              const Row(
+                children: [
+                  Text(
+                    'HABIT\nTRACKER',
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(CupertinoIcons.brightness_solid),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'DARK MODE',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  CupertinoSwitch(
+                      value: context.read<ThemeBloc>().isDark,
+                      onChanged: (test) {
+                        context.read<ThemeBloc>().toggleDarkMode();
+                      }),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'bloc/fab_visibility_bloc.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/models/habit.dart';
 
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (ctx) => ThemeBloc(isDark)),
         BlocProvider(create: (ctx) => MainBloc(HabitDatabase(isar: isar))),
         BlocProvider(create: (ctx) => EmptyFieldBloc()),
+        BlocProvider(create: (ctx) => FabVisibilityBloc()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeData>(
         builder: (BuildContext context, theme) {

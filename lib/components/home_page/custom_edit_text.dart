@@ -5,8 +5,8 @@ import 'package:habit_tracker/bloc/empty_field_bloc.dart';
 class CustomEditText extends StatelessWidget {
   const CustomEditText({
     super.key,
-    required this.controller, this.title = '',
-
+    required this.controller,
+    this.title = '',
   });
 
   final TextEditingController controller;
@@ -32,20 +32,23 @@ class CustomEditText extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(onChanged: (text) {
-              if(text.isEmpty) {
-                context.read<EmptyFieldBloc>().toggle(true);
-              } else {
-                context.read<EmptyFieldBloc>().toggle(false);
-              }
-            },
+            child: TextField(
+              onChanged: (text) {
+                if (text.isEmpty) {
+                  context.read<EmptyFieldBloc>().toggle(true);
+                } else {
+                  context.read<EmptyFieldBloc>().toggle(false);
+                }
+              },
               controller: controller,
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
                 hintText: 'enter here ...',
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.75),
+                  color:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.75),
+                  fontWeight: FontWeight.w300,
                 ),
               ),
             ),

@@ -32,7 +32,7 @@ class HabitTile extends StatelessWidget {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         child: Container(
           decoration: BoxDecoration(
             color: isCompleted

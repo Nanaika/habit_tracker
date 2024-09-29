@@ -40,54 +40,131 @@ class HabitTile extends StatelessWidget {
                 : Theme.of(context).colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Slidable(
-            startActionPane: ActionPane(
-                extentRatio: 0.45,
-                motion: const BehindMotion(),
-                children: [
-                  SlidableAction(
-                    onPressed: onEdit,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    icon: CupertinoIcons.square_pencil,
-                    // borderRadius: BorderRadius.circular(10),
-                  ),
-                  SlidableAction(
-                    onPressed: onDelete,
-                    backgroundColor: errorColor,
-                    icon: CupertinoIcons.clear_circled,
-                    borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(10),
-                        bottomRight: Radius.circular(10)),
-                  ),
-                ]),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isCompleted
-                    ? Colors.green
-                    : Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(10),
+          child: CustomSlidable(
+            habit: habit,
+            isCompleted: isCompleted,
+            onChanged: onChanged,
+            onEdit: onEdit,
+            onDelete: onDelete,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomSlidable extends StatelessWidget {
+  const CustomSlidable(
+      {super.key,
+      this.onEdit,
+      this.onDelete,
+      required this.habit,
+      required this.isCompleted,
+      this.onChanged});
+
+  final Habit habit;
+  final bool isCompleted;
+  final void Function(BuildContext)? onEdit;
+  final void Function(BuildContext)? onDelete;
+  final void Function(bool?)? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final orientation = MediaQuery.of(context).orientation;
+    if (orientation == Orientation.portrait) {
+      return Slidable(
+        endActionPane: ActionPane(
+            extentRatio: 0.45,
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                onPressed: onEdit,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                icon: CupertinoIcons.square_pencil,
+                // borderRadius: BorderRadius.circular(10),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ListTile(
-                  leading: Checkbox(
-                    value: isCompleted,
-                    onChanged: onChanged,
-                    activeColor: Colors.green,
-                  ),
-                  title: Text(
-                    habit.name,
-                    style: TextStyle(
-                      color: setColor(context, isCompleted),
-                    ),
-                  ),
+              SlidableAction(
+                onPressed: onDelete,
+                backgroundColor: errorColor,
+                icon: CupertinoIcons.clear_circled,
+                borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomRight: Radius.circular(10)),
+              ),
+            ]),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isCompleted
+                ? Colors.green
+                : Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ListTile(
+              leading: Checkbox(
+                value: isCompleted,
+                onChanged: onChanged,
+                activeColor: Colors.green,
+              ),
+              title: Text(
+                habit.name,
+                style: TextStyle(
+                  color: setColor(context, isCompleted),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Slidable(
+        startActionPane: ActionPane(
+            extentRatio: 0.45,
+            motion: const BehindMotion(),
+            children: [
+              SlidableAction(
+                onPressed: onDelete,
+                backgroundColor: errorColor,
+                icon: CupertinoIcons.clear_circled,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                ),
+              ),
+              SlidableAction(
+                onPressed: onEdit,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                icon: CupertinoIcons.square_pencil,
+                // borderRadius: BorderRadius.circular(10),
+              ),
+            ]),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isCompleted
+                ? Colors.green
+                : Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ListTile(
+              leading: Checkbox(
+                value: isCompleted,
+                onChanged: onChanged,
+                activeColor: Colors.green,
+              ),
+              title: Text(
+                habit.name,
+                style: TextStyle(
+                  color: setColor(context, isCompleted),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 

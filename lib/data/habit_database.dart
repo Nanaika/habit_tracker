@@ -13,7 +13,7 @@ class HabitDatabase {
   Future<void> saveFirstLaunchDate() async {
     final existingSettings = await isar.appSettings.where().findFirst();
     if (existingSettings == null) {
-      final firstSettings = AppSettings()..firstLaunch = DateTime.now();
+      final firstSettings = AppSettings()..firstLaunch = DateTime.fromMillisecondsSinceEpoch(1380446109000);
       await isar.writeTxn(() => isar.appSettings.put(firstSettings));
     }
   }

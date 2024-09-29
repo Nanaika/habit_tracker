@@ -52,19 +52,135 @@ class _HomePageState extends State<HomePage>
     animController.dispose();
     super.dispose();
   }
+
+  void showFabIfNoScrollItems() {
+    if (scrollController.hasClients) {
+      if (scrollController.position.maxScrollExtent <=
+          scrollController.position.minScrollExtent) {
+        context.read<FabVisibilityBloc>().toggle(true);
+        animController.reverse();
+      }
+    }
+  }
+
+  Widget buildPortrait() {
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor:
+            Theme.of(context).colorScheme.surface.withOpacity(0.02),
+      ),
+      drawer: const CustomDrawer(),
+      floatingActionButton: SlideTransition(
+        position: slideTransition,
+        child: CustomFAB(
+          onPressed: () {
+            controller.clear();
+            showCustomDialog(
+              title: 'NEW HABIT',
+              context: context,
+              controller: controller,
+              onAccept: () {
+                if (controller.text.isEmpty) {
+                  context.read<EmptyFieldBloc>().toggle(true);
+                  return;
+                }
+                context.read<MainBloc>().addHabit(controller.text);
+                Navigator.of(context).pop();
+                controller.clear();
+              },
+              onCancel: () {
+                Navigator.of(context).pop();
+                controller.clear();
+              },
+            );
+          },
+        ),
+      ),
+      body: SafeArea(
+        child: BlocBuilder<MainBloc, List<Habit>>(
+          builder: (BuildContext context, habits) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showFabIfNoScrollItems();
+            });
+            return Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                    height: MediaQuery.of(context).size.height / 3,
+                    child: setHeatMap(context, habits)),
+                Expanded(
+                  child: habits.isNotEmpty
+                      ? ListView.builder(
+                          controller: scrollController,
+                          // physics: const AlwaysScrollableScrollPhysics(
+                          //   parent: BouncingScrollPhysics(),
+                          // ),
+                          itemCount: habits.length,
+                          itemBuilder: (ctx, index) {
+                            final habit = habits[index];
+                            final isCompletedToday =
+                                isHabitCompletedToday(habit.completedDays);
+                            return HabitTile(
+                              onEdit: (ctx) {
+                                controller.text = habit.name;
+                                showCustomDialog(
+                                    context: context,
+                                    controller: controller,
+                                    title: 'EDIT HABIT',
+                                    onCancel: () {
+                                      Navigator.of(context).pop();
+                                      controller.clear();
+                                    },
+                                    onAccept: () {
+                                      if (controller.text.isEmpty) {
+                                        context
+                                            .read<EmptyFieldBloc>()
+                                            .toggle(true);
+                                        return;
+                                      }
+                                      editHabitName(
+                                          controller.text, habit.id, context);
+                                      controller.clear();
+                                      Navigator.of(context).pop();
+                                    });
+                              },
+                              onDelete: (ctx) {
+                                showCustomDeleteDialog(
+                                    context: context,
+                                    onAccept: () {
+                                      deleteHabit(habit.id, context);
+                                      controller.clear();
+                                      Navigator.of(context).pop();
+                                    },
+                                    onCancel: () {
+                                      Navigator.of(context).pop();
+                                      controller.clear();
+                                    });
+                              },
+                              habit: habit,
+                              isCompleted: isCompletedToday,
+                              onChanged: (value) =>
+                                  checkHabitOnOff(value, habit, context),
+                            );
+                          })
+                      : EmptyHabitsView(),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
 //start landscape
   Widget buildLandscape() {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      // appBar: AppBar(
-      //   elevation: 0,
-      //   toolbarHeight: 0.0,
-      //   backgroundColor:
-      //       Colors.transparent,
-      //       // Theme.of(context).colorScheme.surface.withOpacity(0.02),
-      // ),
       drawer: const CustomDrawer(),
       floatingActionButton: SlideTransition(
         position: slideTransition,
@@ -94,71 +210,75 @@ class _HomePageState extends State<HomePage>
       ),
       body: BlocBuilder<MainBloc, List<Habit>>(
         builder: (BuildContext context, habits) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showFabIfNoScrollItems();
+          });
           return Row(
             mainAxisSize: MainAxisSize.max,
             children: [
-
-              SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
-                  child: setHeatMap(context, habits)),
+              SafeArea(
+                right: false,
+                top: false,
+                bottom: false,
+                child: SizedBox(
+                    width: MediaQuery.of(context).size.width / 2,
+                    child: setHeatMap(context, habits)),
+              ),
               Expanded(
                 child: habits.isNotEmpty
                     ? SafeArea(
-                  top: false,
-                      child: ListView.builder(
-                      controller: scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
-                      ),
-                      itemCount: habits.length,
-                      itemBuilder: (ctx, index) {
-                        final habit = habits[index];
-                        final isCompletedToday =
-                        isHabitCompletedToday(habit.completedDays);
-                        return HabitTile(
-                          onEdit: (ctx) {
-                            controller.text = habit.name;
-                            showCustomDialog(
-                                context: context,
-                                controller: controller,
-                                title: 'EDIT HABIT',
-                                onCancel: () {
-                                  Navigator.of(context).pop();
-                                  controller.clear();
+                        top: false,
+                        child: ListView.builder(
+                            controller: scrollController,
+                            itemCount: habits.length,
+                            itemBuilder: (ctx, index) {
+                              final habit = habits[index];
+                              final isCompletedToday =
+                                  isHabitCompletedToday(habit.completedDays);
+                              return HabitTile(
+                                onEdit: (ctx) {
+                                  controller.text = habit.name;
+                                  showCustomDialog(
+                                      context: context,
+                                      controller: controller,
+                                      title: 'EDIT HABIT',
+                                      onCancel: () {
+                                        Navigator.of(context).pop();
+                                        controller.clear();
+                                      },
+                                      onAccept: () {
+                                        if (controller.text.isEmpty) {
+                                          context
+                                              .read<EmptyFieldBloc>()
+                                              .toggle(true);
+                                          return;
+                                        }
+                                        editHabitName(
+                                            controller.text, habit.id, context);
+                                        controller.clear();
+                                        Navigator.of(context).pop();
+                                      });
                                 },
-                                onAccept: () {
-                                  if (controller.text.isEmpty) {
-                                    context
-                                        .read<EmptyFieldBloc>()
-                                        .toggle(true);
-                                    return;
-                                  }
-                                  editHabitName(
-                                      controller.text, habit.id, context);
-                                  controller.clear();
-                                  Navigator.of(context).pop();
-                                });
-                          },
-                          onDelete: (ctx) {
-                            showCustomDeleteDialog(
-                                context: context,
-                                onAccept: () {
-                                  deleteHabit(habit.id, context);
-                                  controller.clear();
-                                  Navigator.of(context).pop();
+                                onDelete: (ctx) {
+                                  showCustomDeleteDialog(
+                                      context: context,
+                                      onAccept: () {
+                                        deleteHabit(habit.id, context);
+                                        controller.clear();
+                                        Navigator.of(context).pop();
+                                      },
+                                      onCancel: () {
+                                        Navigator.of(context).pop();
+                                        controller.clear();
+                                      });
                                 },
-                                onCancel: () {
-                                  Navigator.of(context).pop();
-                                  controller.clear();
-                                });
-                          },
-                          habit: habit,
-                          isCompleted: isCompletedToday,
-                          onChanged: (value) =>
-                              checkHabitOnOff(value, habit, context),
-                        );
-                      }),
-                    )
+                                habit: habit,
+                                isCompleted: isCompletedToday,
+                                onChanged: (value) =>
+                                    checkHabitOnOff(value, habit, context),
+                              );
+                            }),
+                      )
                     : EmptyHabitsView(),
               ),
             ],
@@ -167,16 +287,11 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+
 //end landscape
   @override
   Widget build(BuildContext context) {
     scrollController.addListener(() {
-
-      //TODO reverse button not working
-      //TODO status bar not transparent
-
-      print('----TEST offset----------  ${scrollController.offset}');
-      print('----TEST max----------  ${scrollController.position.maxScrollExtent}');
       if (scrollController.position.atEdge &&
           context.read<FabVisibilityBloc>().state &&
           scrollController.offset ==
@@ -194,113 +309,13 @@ class _HomePageState extends State<HomePage>
       builder: (BuildContext context, Orientation orientation) {
         return orientation == Orientation.landscape
             ? buildLandscape()
-            : SizedBox();
+            : buildPortrait();
       },
     );
-    // return Scaffold(
-    //   backgroundColor: Theme.of(context).colorScheme.surface,
-    //   appBar: AppBar(
-    //     elevation: 0,
-    //     backgroundColor:
-    //         Theme.of(context).colorScheme.surface.withOpacity(0.02),
-    //   ),
-    //   drawer: const CustomDrawer(),
-    //   floatingActionButton: SlideTransition(
-    //     position: slideTransition,
-    //     child: CustomFAB(
-    //       onPressed: () {
-    //         controller.clear();
-    //         showCustomDialog(
-    //           title: 'NEW HABIT',
-    //           context: context,
-    //           controller: controller,
-    //           onAccept: () {
-    //             if (controller.text.isEmpty) {
-    //               context.read<EmptyFieldBloc>().toggle(true);
-    //               return;
-    //             }
-    //             context.read<MainBloc>().addHabit(controller.text);
-    //             Navigator.of(context).pop();
-    //             controller.clear();
-    //           },
-    //           onCancel: () {
-    //             Navigator.of(context).pop();
-    //             controller.clear();
-    //           },
-    //         );
-    //       },
-    //     ),
-    //   ),
-    //   body: SafeArea(
-    //     child: BlocBuilder<MainBloc, List<Habit>>(
-    //       builder: (BuildContext context, habits) {
-    //         return Column(
-    //           mainAxisSize: MainAxisSize.max,
-    //           children: [
-    //             SizedBox(
-    //                 height: MediaQuery.of(context).size.height / 3,
-    //                 child: setHeatMap(context, habits)),
-    //             Expanded(
-    //               child: habits.isNotEmpty ? ListView.builder(
-    //                   controller: scrollController,
-    //                   // physics: const AlwaysScrollableScrollPhysics(
-    //                   //   parent: BouncingScrollPhysics(),
-    //                   // ),
-    //                   itemCount: habits.length,
-    //                   itemBuilder: (ctx, index) {
-    //                     final habit = habits[index];
-    //                     final isCompletedToday =
-    //                         isHabitCompletedToday(habit.completedDays);
-    //                     return HabitTile(
-    //                       onEdit: (ctx) {
-    //                         controller.text = habit.name;
-    //                         showCustomDialog(
-    //                             context: context,
-    //                             controller: controller,
-    //                             title: 'EDIT HABIT',
-    //                             onCancel: () {
-    //                               Navigator.of(context).pop();
-    //                               controller.clear();
-    //                             },
-    //                             onAccept: () {
-    //                               if (controller.text.isEmpty) {
-    //                                 context.read<EmptyFieldBloc>().toggle(true);
-    //                                 return;
-    //                               }
-    //                               editHabitName(
-    //                                   controller.text, habit.id, context);
-    //                               controller.clear();
-    //                               Navigator.of(context).pop();
-    //                             });
-    //                       },
-    //                       onDelete: (ctx) {
-    //                         showCustomDeleteDialog(
-    //                             context: context,
-    //                             onAccept: () {
-    //                               deleteHabit(habit.id, context);
-    //                               controller.clear();
-    //                               Navigator.of(context).pop();
-    //                             },
-    //                             onCancel: () {
-    //                               Navigator.of(context).pop();
-    //                               controller.clear();
-    //                             });
-    //                       },
-    //                       habit: habit,
-    //                       isCompleted: isCompletedToday,
-    //                       onChanged: (value) =>
-    //                           checkHabitOnOff(value, habit, context),
-    //                     );
-    //                   }) : EmptyHabitsView(),
-    //             ),
-    //           ],
-    //         );
-    //       },
-    //     ),
-    //   ),
-    // );
   }
 }
+
+
 
 void deleteHabit(int id, BuildContext context) {
   context.read<MainBloc>().delete(id);

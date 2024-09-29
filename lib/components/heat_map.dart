@@ -10,17 +10,17 @@ class CustomHeatMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HeatMap(
+    return HeatMapCalendar(
         colorMode: ColorMode.color,
         defaultColor: Theme.of(context).colorScheme.secondary,
         textColor: Colors.white,
         showColorTip: false,
-        showText: true,
-        scrollable: true,
-        size: 30,
+        // showText: true,
+        // scrollable: true,
+        size: 35,
         datasets: dataset,
-        endDate: DateTime.now(),
-        startDate: startDate,
+        initDate: DateTime.now(),
+        // startDate: startDate,
         colorsets: {
           0: Colors.green.shade100,
           1: Colors.green.shade200,
